@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.smoking_identification.mapper.CameraMapper">
+
+    <select id="list" resultType="com.ruoyi.smoking_identification.domain.vo.CameraListVo">
+        SELECT *
+        FROM camera
+    </select>
+
+    <select id="dtl" resultType="com.ruoyi.smoking_identification.domain.vo.CameraDtlVo">
+        SELECT *
+        FROM camera AS c
+        WHERE c.camera_id = #{cameraId}
+    </select>
+</mapper>

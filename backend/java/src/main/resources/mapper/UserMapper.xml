@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.smoking_identification.mapper.UserMapper">
+
+    <select id="login" resultType="com.ruoyi.smoking_identification.domain.entity.SysUser">
+        SELECT *
+        FROM sys_user as u
+        WHERE u.user_name = #{userName}
+    </select>
+
+    <select id="selectByUserName" resultType="com.ruoyi.smoking_identification.domain.entity.SysUser">
+        SELECT *
+        FROM sys_user as u
+        WHERE u.user_name = #{userName}
+    </select>
+
+    <insert id="register">
+        INSERT INTO sys_user (user_name,password,phone,create_time,email)
+        VALUES (#{userName},#{password},#{phone},NOW(),#{email})
+    </insert>
+</mapper>

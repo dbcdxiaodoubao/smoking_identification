@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.smoking_identification.mapper.IncidentMapper">
+
+    <insert id="insertIncident">
+        INSERT INTO incident (
+            location,
+            picture_url,
+            status,
+            camera_id,
+            create_time,
+            student_id
+        )
+        VALUES (
+                #{location},
+                #{pictureUrl},
+                0,
+                #{cameraId},
+                NOW(),
+                #{studentId}
+                 )
+    </insert>
+
+    <select id="list" resultType="com.ruoyi.smoking_identification.domain.vo.IncidentListVo">
+        SELECT i.*,
+               c.level,
+               s.name
+        FROM incident as i
+        left join
+        student as s
+        ON
+        i.student_id = s.student_id
+        INNER JOIN
+            camera as c
+        ON
+            i.camera_id = c.camera_id
+        <if test="status != null">
+            WHERE i.status = #{status}
+        </if>
+        ORDER BY i.create_time DESC
+    </select>
+
+    <update id="dispose">
+        UPDATE incident AS i
+        SET
+            i.status = 1
+        WHERE
+            i.incident_id = #{incidentId}
+    </update>
+
+    <!-- 结果集映射：对应VO字段 -->
+    <resultMap id="IncidentDailyCountResultMap" type="com.ruoyi.smoking_identification.domain.vo.TrendListVo">
+        <result property="incidentDate" column="incident_date"/>
+        <result property="incidentCount" column="incident_count"/>
+    </resultMap>
+
+    <select id="listTrend" resultMap="IncidentDailyCountResultMap">
+        SELECT
+            DATE_FORMAT(create_time, '%Y-%m-%d') AS incident_date,
+            COUNT(*) AS incident_count
+        FROM
+            incident
+        GROUP BY
+            DATE_FORMAT(create_time, '%Y-%m-%d')
+        ORDER BY
+            incident_date DESC
+    </select>
+
+    <select id="listLocation" resultType="com.ruoyi.smoking_identification.domain.vo.LocationListVo">
+        SELECT
+            location,
+            COUNT(*) AS incident_count
+        FROM
+            incident
+        GROUP BY
+            location
+    </select>
+
+    <select id="listTime" resultType="com.ruoyi.smoking_identification.domain.vo.TimeListVo">
+        SELECT
+            -- 拼接小时时间段（如：08:00-09:00）
+            CONCAT(
+                    DATE_FORMAT(create_time, '%H'), ':00-',
+                    DATE_FORMAT(DATE_ADD(create_time, INTERVAL 1 HOUR), '%H'), ':00'
+            ) AS hour_slot,
+            COUNT(*) AS incident_count -- 总检测数
+        FROM
+            incident
+        GROUP BY
+            CONCAT(
+                    DATE_FORMAT(create_time, '%H'), ':00-',
+                    DATE_FORMAT(DATE_ADD(create_time, INTERVAL 1 HOUR), '%H'), ':00'
+            )
+        ORDER BY
+            CONCAT(
+                         DATE_FORMAT(create_time, '%H'), ':00-',
+                         DATE_FORMAT(DATE_ADD(create_time, INTERVAL 1 HOUR), '%H'), ':00'
+                 ) ASC;
+    </select>
+
+    <select id="listClass" resultType="com.ruoyi.smoking_identification.domain.vo.ClassListVo">
+        SELECT
+            IFNULL(s.banji, '未绑定') AS banji,
+            COUNT(*) AS incident_count
+        FROM
+            incident AS i
+        LEFT JOIN
+            student AS s
+        ON
+            i.student_id = s.student_id
+        GROUP BY
+            IFNULL(s.banji, '未绑定')
+        ORDER BY
+            incident_count DESC
+    </select>
+
+    <select id="listLevel" resultType="com.ruoyi.smoking_identification.domain.vo.LevelListVo">
+        SELECT
+            c.level,
+            COUNT(*) AS incident_count
+        FROM
+            incident AS i
+        LEFT JOIN
+            camera AS c
+        ON
+            i.camera_id = c.camera_id
+        GROUP BY
+            c.level
+    </select>
+</mapper>

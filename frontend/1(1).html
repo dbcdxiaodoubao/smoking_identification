@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>YOLOv8 实时检测 - 带框显示</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+    #video, #overlay {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 640px;
+      height: 480px;
+      border: 1px solid #ccc;
+    }
+    #overlay {
+      pointer-events: none; /* 不阻挡点击 */
+    }
+    #status {
+      margin-top: 520px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <!-- 原始视频流 -->
+  <video id="video" autoplay muted playsinline></video>
+  
+  <!-- 叠加检测框的 canvas -->
+  <canvas id="overlay" width="640" height="480"></canvas>
+
+  <div id="status">正在初始化摄像头...</div>
+
+  <script>
+    const video = document.getElementById('video');
+    const overlay = document.getElementById('overlay');
+    const ctx = overlay.getContext('2d');
+    const statusDiv = document.getElementById('status');
+
+    let detectionResults = []; // 存储最新检测结果
+
+    // 1. 打开摄像头
+    navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 }, audio: false })
+      .then(stream => {
+        video.srcObject = stream;
+        statusDiv.textContent = "摄像头已启动，开始检测...";
+        startDetectionLoop();
+      })
+      .catch(err => {
+        statusDiv.textContent = "无法访问摄像头: " + err.message;
+        console.error("Camera error:", err);
+      });
+
+    // 2. 绘制检测框（每帧调用）
+    function drawDetections() {
+      ctx.clearRect(0, 0, overlay.width, overlay.height);
+
+      detectionResults.forEach(det => {
+        const { class_name, confidence, x, y, w, h } = det;
+
+        // 设置样式
+        ctx.strokeStyle = '#FF0000'; // 红色框
+        ctx.lineWidth = 2;
+        ctx.fillStyle = '#FF0000';
+        ctx.font = '14px Arial';
+
+        // 绘制矩形框
+        ctx.strokeRect(x, y, w, h);
+
+        // 绘制标签背景
+        const label = `${class_name} ${(confidence * 100).toFixed(0)}%`;
+        const textWidth = ctx.measureText(label).width;
+        ctx.fillStyle = 'rgba(255, 0, 0, 0.7)';
+        ctx.fillRect(x, y - 20, textWidth + 6, 20);
+
+        // 绘制文字
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillText(label, x + 3, y - 5);
+      });
+
+      requestAnimationFrame(drawDetections); // 持续重绘
+    }
+
+    // 启动绘制循环
+    drawDetections();
+
+    // 3. 检测主循环：每 500ms 发一帧
+    async function startDetectionLoop() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 640;
+      canvas.height = 480;
+      const capCtx = canvas.getContext('2d');
+
+      while (true) {
+        // 等待 500ms
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        // 捕获当前视频帧
+        capCtx.drawImage(video, 0, 0, 640, 480);
+        
+        // 转为 Blob
+        const blob = await new Promise(resolve => 
+          canvas.toBlob(resolve, 'image/jpeg', 0.7)
+        );
+
+        if (!blob) continue;
+
+        // 发送到后端
+        const formData = new FormData();
+        formData.append('image', blob, 'frame.jpg');
+
+        try {
+          const res = await fetch('http://localhost:8080/api/detect', {
+            method: 'POST',
+            body: formData
+          });
+
+          if (res.ok) {
+            detectionResults = await res.json(); // 更新全局结果
+          } else {
+            console.warn('检测失败:', res.status);
+          }
+        } catch (err) {
+          console.error('请求出错:', err);
+        }
+      }
+    }
+  </script>
+</body>
+</html>

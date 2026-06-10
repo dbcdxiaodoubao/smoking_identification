@@ -1,0 +1,65 @@
+/* 校园无烟慧眼系统 — 设计令牌 */
+
+:root {
+  /* 主色 */
+  --color-primary: #409EFF;
+  --color-primary-light: #66B1FF;
+  --color-primary-lighter: #A0CFFF;
+  --color-primary-bg: rgba(64, 158, 255, 0.08);
+
+  /* 语义色 */
+  --color-success: #67C23A;
+  --color-success-light: #85CE61;
+  --color-success-bg: rgba(103, 194, 58, 0.08);
+
+  --color-warning: #E6A23C;
+  --color-warning-light: #F0C78A;
+  --color-warning-bg: rgba(230, 162, 60, 0.08);
+
+  --color-danger: #F56C6C;
+  --color-danger-light: #F89898;
+  --color-danger-bg: rgba(245, 108, 108, 0.08);
+
+  --color-info: #909399;
+
+  /* 中性色 */
+  --color-bg-page: #f0f2f5;
+  --color-bg-card: #ffffff;
+  --color-bg-hover: #f5f7fa;
+  --color-bg-active: #e6f7ff;
+
+  --color-text-primary: #303133;
+  --color-text-regular: #606266;
+  --color-text-secondary: #909399;
+  --color-text-placeholder: #C0C4CC;
+
+  --color-border: #DCDFE6;
+  --color-border-light: #E4E7ED;
+  --color-border-lighter: #EBEEF5;
+
+  /* 阴影 */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-base: 0 2px 12px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
+
+  /* 圆角 */
+  --radius-sm: 6px;
+  --radius-base: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+
+  /* 间距 */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-base: 16px;
+  --spacing-md: 20px;
+  --spacing-lg: 24px;
+
+  /* 字号 */
+  --font-size-sm: 12px;
+  --font-size-base: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 20px;
+  --font-size-xl: 24px;
+}

@@ -1,0 +1,47 @@
+# 编辑器、缓存、系统文件
+.idea/
+.claude/
+.vscode/
+*.iml
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+Thumbs.db
+
+# 忽略 Java 编译目录
+target/
+dist/
+
+# 先忽略 yolo 下所有内容
+/backend/python/yolo/*
+
+# 放行指定目录&文件
+!/backend/python/yolo/server/
+!/backend/python/yolo/smoke_detection/
+/backend/python/yolo/smoke_detection/*
+!/backend/python/yolo/smoke_detection/gpu_final_p2/
+/backend/python/yolo/smoke_detection/gpu_final_p2/*
+!/backend/python/yolo/smoke_detection/gpu_final_p2/weights/
+/backend/python/yolo/smoke_detection/gpu_final_p2/weights/*
+!/backend/python/yolo/smoke_detection/gpu_final_p2/weights/best.pt
+
+# 全局屏蔽各类大文件/资源
+*.pth
+*.onnx
+*.bin
+*.h5
+*.jpg
+*.png
+*.jpeg
+*.mp4
+*.avi
+*.zip
+*.rar
+dataset/
+runs/
+train/
+test/
+data/
+images/
+videos/
