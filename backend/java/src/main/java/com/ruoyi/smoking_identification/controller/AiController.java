@@ -29,6 +29,14 @@ import java.util.concurrent.TimeUnit;
 @Api(tags = "AI接口")
 public class AiController {
 
+    private String requireApiKey() {
+        String apiKey = System.getenv("ZHIPUAI_API_KEY");
+        if (apiKey == null || apiKey.trim().isEmpty()) {
+            throw new IllegalStateException("ZHIPUAI_API_KEY is not configured");
+        }
+        return apiKey;
+    }
+
     @Autowired
     private IIncidentService incidentService;
 
@@ -82,7 +90,7 @@ public class AiController {
 
         Request request = new Request.Builder()
                 .url("https://open.bigmodel.cn/api/paas/v4/chat/completions")
-                .addHeader("Authorization", "Bearer ZHIPUAI_API_KEY")
+                .addHeader("Authorization", "Bearer " + requireApiKey())
                 .addHeader("Content-Type", "application/json")
                 .post(body)
                 .build();
