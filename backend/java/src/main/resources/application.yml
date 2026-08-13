@@ -1,85 +1,62 @@
-# 也是springboot的配置文件，两个都可以用
 server:
-  port: 8080
-  servlet:
-    #配置根路径
-    context-path:
-# 配置数据源
+  port: ${SERVER_PORT:8080}
+
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/smoke?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8&allowPublicKeyRetrieval=true
-    username: root
-    password: change-me
+    url: ${DB_URL:jdbc:mysql://localhost:3306/smoke?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8&allowPublicKeyRetrieval=true}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:change-me}
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
   servlet:
     multipart:
-      max-file-size: 10MB  # 单个文件最大大小（图片一般设置5-10MB即可）
-      max-request-size: 100MB  # 单次请求最大文件大小（多文件上传时生效）
+      max-file-size: 10MB
+      max-request-size: 100MB
   mail:
-    # 邮件服务器地址（不同邮箱地址不同）
-    host: smtp.qq.com  # QQ邮箱用这个，163邮箱是smtp.163.com
-    port: 587  # 端口（QQ/163邮箱587，SSL端口465）
-    username: change-me@example.com  # 你的发件邮箱
-    password: change-me
+    host: ${MAIL_HOST:smtp.qq.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:change-me@example.com}
+    password: ${MAIL_PASSWORD:change-me}
     default-encoding: UTF-8
     properties:
       mail:
         smtp:
-          auth: true  # 开启认证
+          auth: true
           starttls:
-            enable: true  # 开启TLS加密（587端口需要）
+            enable: true
             required: true
 
 jwt:
-  secret: change-me
-  expire: 720000000000 # 过期时间2小时，可按需调整
+  secret: ${JWT_SECRET:change-me}
+  expire: ${JWT_EXPIRE:7200000}
 
 upload:
-  path: D:/upload/images/  # 本地存储路径（Windows）
-  # path: /usr/local/upload/images/  # 本地存储路径（Linux/Mac）
-  access-path: http://localhost:8080/images/  # 图片访问前缀（前端通过该前缀+文件名访问图片）
+  path: ${UPLOAD_PATH:./upload/images/}
+  access-path: ${UPLOAD_ACCESS_PATH:http://localhost:8080/images/}
 
-# 配置mybatis-plus（替换原mybatis配置，兼容原功能）
 mybatis-plus:
-  # mapper配置文件路径（保持原有）
   mapper-locations: classpath:mapper/*.xml
-  # resultType别名扫描（保持原有，注意包名替换为你的实际实体包）
-  type-aliases-package: com.ruoyi.ancientcharmoffujianstyle.entity
+  type-aliases-package: com.ruoyi.smoking_identification.domain.entity
   configuration:
-    # 下划线自动转驼峰（保持原有）
     map-underscore-to-camel-case: true
-    # 打印SQL日志（可选，方便调试）
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-  # 全局配置（核心：逻辑删除）
   global-config:
     db-config:
-      # 逻辑删除字段名（默认是del_flag，可改为你的实际字段名，如is_deleted）
       logic-delete-field: del_flag
-      # 逻辑删除-已删除值（默认1，可自定义）
       logic-delete-value: 1
-      # 逻辑删除-未删除值（默认0，可自定义）
       logic-not-delete-value: 0
 
-# 分页插件配置（保持原有pagehelper，也可替换为MyBatis-Plus自带分页）
 pagehelper:
-  # 方言配置（根据你的实际数据库调整：mysql/oracle/sqlserver）
   helper-dialect: mysql
-  # 合理化分页（页码<=0时查第1页，页码>总页数时查最后一页）
   reasonable: true
-  # 支持通过 Mapper 接口参数传递分页参数
   support-methods-arguments: true
-  # 分页参数别名（默认即可）
   params: count=countSql
 
-# Knife4j配置（可选，如果你集成了Knife4j/Swagger）
 knife4j:
-  enable: true # 启用Knife4j
+  enable: true
 
 security:
-  # 配置不需要认证就能访问的路径，如登录、注册、静态资源、Swagger文档等
   ignore-urls:
     - /login
     - /register
